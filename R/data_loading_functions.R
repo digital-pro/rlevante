@@ -40,16 +40,7 @@ find_dataset <- function(dataset_list, dataset_name) {
   return(found_dataset)
 }
 
-get_dataset_properties <- function(our_dataset) {
-  return(our_dataset$properties)
-}
-
-# This is sample code for a client script
-our_datasets <- list_organization_datasets()
-found_dataset <- find_dataset(our_datasets, 'DE-pilot')
-dataset_properties <- get_dataset_properties(found_dataset[[1]])
-
-#' Fix some stuff in tables
+#' Fix data issues in our tables
 #'
 #' There can be some anomalies in LEVANTE data stored in Redivis. This function
 #' will clean up some of the most common

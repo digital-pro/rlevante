@@ -2,13 +2,17 @@
 #'
 #'
 
+dataset_cache_dir <- "./dataset_cache/"
+
 # Save an in memory dataset to a cache location
-save_dataset <- function(our_dataset) {
-  return(success_flag)
+cache_dataset <- function(our_dataset, cache_dir = dataset_cache_dir) {
+  save(our_dataset, paste(cache_dir, our_dataset$name))
+  #return(success_flag)
 }
 
 # Load a cached dataset into memory
-load_dataset <- function(dataset_name) {
+retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
+  loaded_dataset <- load(paste(cache_dir, dataset_name))
   return(loaded_dataset)
 }
 
