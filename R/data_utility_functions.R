@@ -20,6 +20,23 @@ list_organization_datasets <- function(org_name = 'levante') {
   return(datasets)
 }
 
+# List all the datasets you have created.
+# This is a way to get the update time and/or version of a dataset
+# to compare with a previously downloaded copy
+# (Can we get the username for the current user ourselves?)
+list_user_datasets <- function(user_name) {
+
+  # Datasets per user
+  user <- redivis::user(user_name)
+  datasets <- user$list_datasets()
+
+  # For debugging
+  #for (dataset in datasets){
+  #  print(dataset$properties$"name")
+  #}
+  return(datasets)
+}
+
 # pick a specific dataset out of the list of datasets provided
 find_dataset <- function(dataset_list, dataset_name) {
   found_dataset <- dataset_list[sapply(dataset_list, +
