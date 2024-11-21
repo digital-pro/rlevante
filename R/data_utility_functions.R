@@ -2,6 +2,18 @@
 #'
 #'
 
+#' Set the desired theme for our output
+setup_ui <- function() {
+  .font <- "Source Sans Pro"
+  theme_set(theme_bw(base_size = 14, base_family = .font))
+  theme_update(panel.grid = element_blank(),
+             strip.background = element_blank(),
+             legend.key = element_blank(),
+             panel.border = element_blank(),
+             axis.line = element_line(),
+             strip.text = element_text(face = "bold"))
+}
+
 #' @param our_dataset Already loaded dataset
 #' @return Properties of the dataset
 get_dataset_properties <- function(our_dataset) {
@@ -11,6 +23,7 @@ get_dataset_properties <- function(our_dataset) {
 # List all the datasets to which you have access in a particular organization.
 # This is a way to get the update time and/or version of a dataset
 # to compare with a previously downloaded copy
+
 
 #' @param org_name Return datasets belonging to this Organization
 #' @return List of datasets belonging to the organization
