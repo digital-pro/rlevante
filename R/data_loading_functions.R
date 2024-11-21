@@ -19,28 +19,7 @@ get_datasets <- function(dataset_names, org_name = "levante", tables = NULL) {
   purrr::map(datasets, get_dataset_tables)
 }
 
-# List all the datasets to which you have access in a particular organization.
-# This is a way to get the update time and/or version of a dataset
-# to compare with a previously downloaded copy
-list_organization_datasets <- function(org_name = 'levante') {
-  org <- redivis::organization(org_name)
-  datasets <- org$list_datasets()
-
-  # For debugging
-  #for (dataset in datasets){
-  #  print(dataset$properties$"name")
-  #}
-  return(datasets)
-}
-
-# pick a specific dataset out of the list of datasets provided
-find_dataset <- function(dataset_list, dataset_name) {
-  found_dataset <- dataset_list[sapply(dataset_list, +
-    function(x) x$name == dataset_name)]
-  return(found_dataset)
-}
-
-#' Fix data issues in our tables
+#' Fix some stuff in tables
 #'
 #' There can be some anomalies in LEVANTE data stored in Redivis. This function
 #' will clean up some of the most common
@@ -52,7 +31,7 @@ find_dataset <- function(dataset_list, dataset_name) {
 fix_table_types <- function(table_data) {
   table_data |>
     dplyr::mutate(dplyr::across(dplyr::where(rlang::is_character),
-                         \(x) x |> dplyr::na_if("null") |> dplyr::na_if("None"))) |>
+                                \(x) x |> dplyr::na_if("null") |> dplyr::na_if("None"))) |>
     dplyr::mutate(dplyr::across(dplyr::matches("birth_"), as.integer),
                   dplyr::across(dplyr::matches("difficulty"), as.double),
                   dplyr::across(dplyr::matches("rt"), as.character),
