@@ -4,7 +4,13 @@
 
 # Not sure if cache should be per project or per user
 # For now set the default to be under the current project
-dataset_cache_dir <- "./dataset_cache/"
+# file sep on Windows returns "/" so we need to normalize
+canonical_home = normalizePath(Sys.getenv("Home"), winslash = '/')
+dataset_cache_dir <- file.path(canonical_home,"dataset_cache", fsep = .Platform$file.sep)
+
+# Create the cache dir if it doesn't already exist
+if (dir.exists(dataset_cache_dir) == FALSE)
+  dir.create(dataset_cache_dir)
 
 # Save an in memory dataset to a cache location
 # We also want to save at least the last_updated time for re-loading
