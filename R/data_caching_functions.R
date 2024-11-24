@@ -6,7 +6,7 @@
 # For now set the default to be under the current project
 # file sep on Windows returns "/" so we need to normalize
 canonical_home = normalizePath(Sys.getenv("Home"), winslash = '/')
-dataset_cache_dir <- file.path(canonical_home,"dataset_cache", fsep = .Platform$file.sep)
+dataset_cache_dir <- file.path(canonical_home,".levante", fsep = .Platform$file.sep)
 
 # Create the cache dir if it doesn't already exist
 if (dir.exists(dataset_cache_dir) == FALSE)
@@ -19,13 +19,13 @@ if (dir.exists(dataset_cache_dir) == FALSE)
 # properties (like last_updated). Fixing that might require
 # some modification of get_datasets so we know what we got.
 cache_dataset <- function(our_dataset, cache_dir = dataset_cache_dir) {
-  save(our_dataset, paste(cache_dir, our_dataset$name))
+  save(our_dataset, file = file.path(cache_dir, our_dataset[[1]]$name), fsep = .Platform$file.sep)
   #return(success_flag)
 }
 
 # Load a cached dataset into memory
 retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
-  loaded_dataset <- load(paste(cache_dir, dataset_name))
+  loaded_dataset <- load(file.path(cache_dir, dataset_name, fsep = .Platform$file.sep))
   return(loaded_dataset)
 }
 
