@@ -38,7 +38,7 @@ to_mirt_shape <- function(df) {
     column_to_rownames("user_id") # user_id to rownames
 }
 
-paste_c <- partial(paste, collapse = ",")
+paste_c <- purrr::partial(paste, collapse = ",")
 
 #generate_model_str is currently different based on site
 #This is the Columbia version

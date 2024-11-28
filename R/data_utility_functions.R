@@ -14,16 +14,24 @@ setup_ui <- function() {
              strip.text = element_text(face = "bold"))
 }
 
-#' @param our_dataset Already loaded dataset
+#' This function is quite round-about, but trying to get properties
+#' more directly has so far not yielded results
+#' At some point I'm sure there will be a better implementation
+#' @param dataset name
 #' @return Properties of the dataset
-get_dataset_properties <- function(our_dataset) {
-  return(our_dataset$properties)
+get_dataset_properties <- function(organization_name, dataset_name) {
+  our_datasets <- list_organization_datasets(organization_name)
+  found_dataset <- lapply(our_datasets, \(ds) {
+    if(ds$name == dataset_name)
+      return(ds) })
+  # cherry pick our dataset -- Should probably be a pipe:)
+  found_dataset <- found_dataset[!found_dataset %in% list(NULL)]
+  dataset_properties <- found_dataset[[1]]$properties
 }
 
 # List all the datasets to which you have access in a particular organization.
 # This is a way to get the update time and/or version of a dataset
 # to compare with a previously downloaded copy
-
 
 #' @param org_name Return datasets belonging to this Organization
 #' @return List of datasets belonging to the organization
@@ -62,8 +70,8 @@ list_user_datasets <- function(user_name) {
 #' @param dataset_name Name of dataset we are looking for.
 #' @return The dataset we found.
 find_dataset <- function(dataset_list, dataset_name) {
-  found_dataset <- dataset_list[sapply(dataset_list, +
-                                         function(x) x$name == dataset_name)]
+  found_dataset <- dataset_list[lapply(dataset_list, +
+    function(x) x$name == dataset_name)]
   return(found_dataset)
 }
 

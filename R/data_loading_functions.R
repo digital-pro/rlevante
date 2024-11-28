@@ -11,13 +11,32 @@ get_datasets <- function(dataset_names, org_name = "levante", tables = NULL) {
   org <- redivis::organization(org_name)
 
   datasets <- dataset_names |> rlang::set_names() |> purrr::map(\(dn) org$dataset(dn))
-
   get_table_names <- \(ds) if (!is.null(tables)) tables else ds$list_tables() |> purrr::map(\(t) t$name)
-
   get_dataset_tables <- \(ds) ds |> get_table_names() |> rlang::set_names() |> purrr::map(\(tn) ds$table(tn)$to_tibble())
 
   purrr::map(datasets, get_dataset_tables)
 }
+
+# Get full datasets, not just tables
+get_datasets_full <- function(dataset_names, org_name = "levante") {
+  org <- redivis::organization(org_name)
+  datasets <- dataset_names |> rlang::set_names() |> purrr::map(\(dn) org$dataset(dn))
+}
+
+# Get a single full dataset, not just tables
+get_dataset_full <- function(dataset_name, org_name = "levante") {
+  org <- redivis::organization(org_name)
+  dataset <- org$dataset(dataset_name)
+}
+
+# This should be simpler, but when we retrieve a single dataset
+# we don't seem to get its properties
+get_dataset_properties <- function(dataset_name, org_name = "levante") {
+  org <- redivis::organization(org_name)
+  dataset <- org$dataset(dataset_name)
+  properties <- dataset$properties
+}
+
 
 #' Fix some stuff in tables
 #'

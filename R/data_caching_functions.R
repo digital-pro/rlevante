@@ -19,8 +19,19 @@ if (dir.exists(dataset_cache_dir) == FALSE)
 # properties (like last_updated). Fixing that might require
 # some modification of get_datasets so we know what we got.
 cache_dataset <- function(our_dataset, cache_dir = dataset_cache_dir) {
-  save(our_dataset, file = file.path(cache_dir, our_dataset[[1]]$name), fsep = .Platform$file.sep)
-  #return(success_flag)
+  cache_file <- file.path(cache_dir, our_dataset$name, fsep = .Platform$file.sep)
+  save(our_dataset, file = cache_file)
+
+  ## For debugging Get file information including last modified time
+  #file_info <- file.info(cache_file)
+
+  # Get dataset last modified time
+  # Set new last modified time to the dataset last-modified time
+  new_time <- as.POSIXct("2023-11-26 10:00:00")
+
+  # Update the file's last modified time
+  Sys.setFileTime(cache_file, new_time)
+
 }
 
 # Load a cached dataset into memory
