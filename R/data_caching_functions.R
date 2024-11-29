@@ -27,17 +27,25 @@ cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = datas
 
   # Get dataset last modified time
   # Set new last modified time to the dataset last-modified time
-  new_time <- as.POSIXct((our_dataset_properties$updatedAt/1000) , format="%Y-%m-%dT%H:%M")
+  new_time <- as.POSIXct((our_dataset_properties$updatedAt/1000),
+        format="%Y-%m-%dT%H:%M")
 
   # Update the file's last modified time
   Sys.setFileTime(cache_file, new_time)
+
+  # Return value is mostly for debugging
   return(paste(cache_file, new_time))
 }
 
-# Load a cached dataset into memory
+# See if cached dataset is up to date
+check_dataset <- function(database, cache_dir = dataset_cache_dir) {
+
+}
+
+# Load a cached dataset into memory when it has been
+# determined that is newer
 retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
   loaded_dataset <- load(file.path(cache_dir, dataset_name, fsep = .Platform$file.sep))
-  return(loaded_dataset)
 }
 
 

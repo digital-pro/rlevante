@@ -87,8 +87,7 @@ combine_datasets <- function(dataset_tables) {
 
 collect_users <- function(dataset_data) {
   dplyr::distinct(dataset_data$users) |>
-    # Using left_join keeps all the data in $user_groups
-    # while connecting them to groups. Using many-to-many
+    # Using many-to-many
     # ensures that we can have users in multiple groups,
     # as well as (of course) many users in a group
     dplyr::left_join(dplyr::distinct(dataset_data$user_groups),
