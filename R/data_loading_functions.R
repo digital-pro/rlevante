@@ -23,9 +23,9 @@ get_datasets <- function(dataset_names, org_name = "levante", tables = NULL) {
 # get dataset from cache or Redivis
 fetch_dataset <- function(dn, org) {
   cache_ok <- check_dataset(dn)
-  #if (cache_ok)
-  #  return(retrieve_dataset(dn))
-  #else
+  if (cache_ok)
+    return(retrieve_dataset(dn))
+  else
     return(org$dataset(dn))
 }
 

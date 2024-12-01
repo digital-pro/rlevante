@@ -44,6 +44,11 @@ check_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
 
   # now get the equivalent date from the cache
   cache_file <- file.path(cache_dir, dataset_name, fsep = .Platform$file.sep)
+
+  # if we have no cache file, then return false
+  if (!file.exists(cache_file))
+    return(FALSE)
+
   file_info <- file.info(cache_file)
   cache_modified_time <- file_info$mtime
 
@@ -63,9 +68,15 @@ check_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
 # Load a cached dataset into memory when it has been
 # determined that is newer
 retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
-  loaded_dataset_name <- load(file.path(cache_dir, dataset_name, fsep = .Platform$file.sep))
+  cached_location <- file.path(cache_dir, dataset_name, fsep = .Platform$file.sep)
+  # In some cases like OneDrive, R doesn't like to load
+  # so we copy to the current folder
+  file.copy(cached_location, '.')
+  loaded_dataset_name <- load(dataset_name)
   # now how do we return the contents of loaded_dataset_name?
   return(get(loaded_dataset_name))
+
+  # we could clean up the local copy of files here if needed
 }
 
 
