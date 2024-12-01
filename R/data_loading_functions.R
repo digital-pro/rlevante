@@ -10,11 +10,23 @@
 get_datasets <- function(dataset_names, org_name = "levante", tables = NULL) {
   org <- redivis::organization(org_name)
 
-  datasets <- dataset_names |> rlang::set_names() |> purrr::map(\(dn) org$dataset(dn))
+  # what we want to have happen
+  datasets <- dataset_names |> rlang::set_names() |> purrr::map(\(dn) fetch_dataset(dn, org))
+  #datasets <- dataset_names |> rlang::set_names() |> purrr::map(\(dn) org$dataset(dn))
+
   get_table_names <- \(ds) if (!is.null(tables)) tables else ds$list_tables() |> purrr::map(\(t) t$name)
   get_dataset_tables <- \(ds) ds |> get_table_names() |> rlang::set_names() |> purrr::map(\(tn) ds$table(tn)$to_tibble())
 
   purrr::map(datasets, get_dataset_tables)
+}
+
+# get dataset from cache or Redivis
+fetch_dataset <- function(dn, org) {
+  cache_ok <- check_dataset(dn)
+  #if (cache_ok)
+  #  return(retrieve_dataset(dn))
+  #else
+    return(org$dataset(dn))
 }
 
 # Get full datasets, not just tables
@@ -86,12 +98,9 @@ combine_datasets <- function(dataset_tables) {
 #' @examples
 
 collect_users <- function(dataset_data) {
-  dplyr::distinct(dataset_data$users) |>
-    # Using many-to-many
-    # ensures that we can have users in multiple groups,
-    # as well as (of course) many users in a group
-    dplyr::left_join(dplyr::distinct(dataset_data$user_groups),
-                     by = "user_id", relationship = "many-to-many") |>
-    dplyr::left_join(dplyr::distinct(dataset_data$groups),
-                     by = "group_id", suffix = c("_user", "_group"))
+  distinct(dataset_data$users) |>
+    left_join(distinct(dataset_data$user_groups),
+              by = "user_id", relationship = "many-to-many") |>
+    left_join(distinct(dataset_data$groups),
+              by = "group_id", suffix = c("_user", "_group"))
 }

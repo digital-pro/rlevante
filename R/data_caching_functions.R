@@ -22,9 +22,6 @@ cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = datas
   cache_file <- file.path(cache_dir, our_dataset$name, fsep = .Platform$file.sep)
   save(our_dataset, file = cache_file)
 
-  ## For debugging Get file information including last modified time
-  #file_info <- file.info(cache_file)
-
   # Get dataset last modified time
   # Set new last modified time to the dataset last-modified time
   new_time <- as.POSIXct((our_dataset_properties$updatedAt/1000),
@@ -38,14 +35,37 @@ cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = datas
 }
 
 # See if cached dataset is up to date
-check_dataset <- function(database, cache_dir = dataset_cache_dir) {
+check_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
+  # first get the last update time for the Redivis dataset
+  # and convert from milliseconds to seconds for use in R
+  dataset_last_update_raw <- get_dataset_properties(dataset_name, org = 'levante')$updatedAt
+  dataset_last_update <- as.POSIXct((dataset_last_update_raw/1000),
+                            format="%Y-%m-%dT%H:%M")
+
+  # now get the equivalent date from the cache
+  cache_file <- file.path(cache_dir, dataset_name, fsep = .Platform$file.sep)
+  file_info <- file.info(cache_file)
+  cache_modified_time <- file_info$mtime
+
+  # We're not trying for sub-second precision, but if the dataset's
+  # update time is meaningfully later than the file modified time,
+  # then we have a cache miss. We get the results in seconds
+  cache_diff <- difftime(dataset_last_update, cache_modified_time, units = "secs")
+  if (cache_diff > 120) # leave 2 minutes in case of possible glitches
+    # cache miss
+    return(FALSE)
+  else
+    # cache hit
+    return(TRUE)
 
 }
 
 # Load a cached dataset into memory when it has been
 # determined that is newer
 retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
-  loaded_dataset <- load(file.path(cache_dir, dataset_name, fsep = .Platform$file.sep))
+  loaded_dataset_name <- load(file.path(cache_dir, dataset_name, fsep = .Platform$file.sep))
+  # now how do we return the contents of loaded_dataset_name?
+  return(get(loaded_dataset_name))
 }
 
 

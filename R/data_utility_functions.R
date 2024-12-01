@@ -75,3 +75,7 @@ find_dataset <- function(dataset_list, dataset_name) {
   return(found_dataset)
 }
 
+#! NULL function as a placeholder since the levante-pilots need it
+remove_practice_trials <- function (our_data) {
+  our_data
+}
