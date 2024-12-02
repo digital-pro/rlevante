@@ -5,8 +5,9 @@
 # Not sure if cache should be per project or per user
 # For now set the default to be under the current project
 # file sep on Windows returns "/" so we need to normalize
-canonical_home = normalizePath(Sys.getenv("Home"), winslash = '/')
-dataset_cache_dir <- file.path(canonical_home,".levante", fsep = .Platform$file.sep)
+canonical_home <- normalizePath(Sys.getenv("Home"), winslash = "/")
+dataset_cache_dir <- file.path(canonical_home, ".levante",
+                               fsep = .Platform$file.sep)
 
 # Create the cache dir if it doesn't already exist
 if (dir.exists(dataset_cache_dir) == FALSE)
@@ -31,8 +32,8 @@ cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = datas
 
   # Get dataset last modified time
   # Set new last modified time to the dataset last-modified time
-  new_time <- as.POSIXct((our_dataset_properties$updatedAt/1000),
-        format="%Y-%m-%dT%H:%M")
+  new_time <- as.POSIXct((our_dataset_properties$updatedAt / 1000),
+                         format = "%Y-%m-%dT%H:%M")
 
   # Update the file's last modified time
   Sys.setFileTime(cache_file, new_time)
@@ -45,9 +46,9 @@ cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = datas
 check_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
   # first get the last update time for the Redivis dataset
   # and convert from milliseconds to seconds for use in R
-  dataset_last_update_raw <- get_dataset_properties(dataset_name, org = 'levante')$updatedAt
-  dataset_last_update <- as.POSIXct((dataset_last_update_raw/1000),
-                            format="%Y-%m-%dT%H:%M")
+  dataset_last_update_raw <- get_dataset_properties(dataset_name, org = "levante")$updatedAt
+  dataset_last_update <- as.POSIXct((dataset_last_update_raw / 1000),
+                                    format = "%Y-%m-%dT%H:%M")
 
   # now get the equivalent date from the cache
   cache_file <- file.path(cache_dir, dataset_name, fsep = .Platform$file.sep)
@@ -78,13 +79,10 @@ retrieve_dataset <- function(dataset_name, cache_dir = dataset_cache_dir) {
   cached_location <- file.path(cache_dir, dataset_name, fsep = .Platform$file.sep)
   # In some cases like OneDrive, R doesn't like to load
   # so we copy to the current folder
-  file.copy(cached_location, '.')
+  file.copy(cached_location, ".")
   loaded_dataset_name <- load(dataset_name)
   # now how do we return the contents of loaded_dataset_name?
   return(get(loaded_dataset_name))
 
   # we could clean up the local copy of files here if needed
 }
-
-
-
