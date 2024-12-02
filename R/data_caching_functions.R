@@ -18,8 +18,15 @@ if (dir.exists(dataset_cache_dir) == FALSE)
 # Annoyingly, the dataset doesn't include its name or its
 # properties (like last_updated). Fixing that might require
 # some modification of get_datasets so we know what we got.
+# NOTE: Can we get dataset properties here, instead of assuming they are passed in?
 cache_dataset <- function(our_dataset, our_dataset_properties, cache_dir = dataset_cache_dir) {
   cache_file <- file.path(cache_dir, our_dataset$name, fsep = .Platform$file.sep)
+
+  # Redivis uses "lazy loading" so we don't get the tables until we ask for them
+  # this is the code for some tables, but we want all tables
+  get_dataset_tables <- \(ds) ds |> ds$list_tables() |> rlang::set_names() |> purrr::map(\(tn) ds$table(tn)$to_tibble())
+  get_dataset_tables(our_dataset)
+
   save(our_dataset, file = cache_file)
 
   # Get dataset last modified time

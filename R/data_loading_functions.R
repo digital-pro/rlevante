@@ -17,16 +17,32 @@ get_datasets <- function(dataset_names, org_name = "levante", tables = NULL) {
   get_table_names <- \(ds) if (!is.null(tables)) tables else ds$list_tables() |> purrr::map(\(t) t$name)
   get_dataset_tables <- \(ds) ds |> get_table_names() |> rlang::set_names() |> purrr::map(\(tn) ds$table(tn)$to_tibble())
 
-  purrr::map(datasets, get_dataset_tables)
+  return_value <- purrr::map(datasets, get_dataset_tables)
+
+  # But first we want to cache all the datasets. Some might have been cached previously,
+  # however on a local disk it is not expensive (until we get smarter:))
+  purrr::map(datasets, cache_dataset)
+  return(return_value)
 }
 
 # get dataset from cache or Redivis
+# this should probably be in the data_caching_functions?
 fetch_dataset <- function(dn, org) {
   cache_ok <- check_dataset(dn)
   if (cache_ok)
+    #print('CACHE OKAY')
     return(retrieve_dataset(dn))
   else
-    return(org$dataset(dn))
+    # WE don't seem to have all the info we need to get a full cache
+    # so try delaying until after tables are loaded
+
+    # first, get it from redivis
+    our_dataset <- org$dataset(dn)
+    # we also need properties to get last update time
+    # NOTE: this call has parameters "backwards"!
+    #our_dataset_properties <- get_dataset_properties('levante', dn)
+    #cache_dataset(our_dataset, our_dataset_properties)
+    return(our_dataset)
 }
 
 # Get full datasets, not just tables
